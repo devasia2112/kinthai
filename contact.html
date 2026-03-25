@@ -69,6 +69,27 @@
                 padding: 10px;
             }
         }
+
+	    /* Custom red theme for map */
+	    #office-map {
+	        filter: hue-rotate(0deg) saturate(1.5);
+	    }
+	    /* Custom marker popup */
+	    .leaflet-popup-content-wrapper {
+	        background-color: #BC544B;
+	        color: white;
+	        border-radius: 8px;
+	        font-weight: bold;
+	        text-align: center;
+	    }
+	    .leaflet-popup-content {
+	        margin: 15px;
+	        font-size: 1.1rem;
+	    }
+	    .leaflet-popup-tip {
+	        background-color: #BC544B;
+	    }
+	    /* Custom red theme for map */
         </style>
     </head>
 
@@ -103,6 +124,22 @@
 								Call: <b>+66 099 353 0593</b> or 
 								<a href="https://wa.me/660993530593?text=Hello,%20I%20am%20interested%20in%20your%20private%20chef%20services%20in%20Hua%20Hin." target="_blank" class="btn btn-lg btn-primary">Chat with Us on WhatsApp</a>
 							</p>
+
+							<!-- map location office -->
+							<div style="margin-top: 40px; padding: 30px 0;">
+							    <h3 style="color: #BC544B; font-size: 1.5rem; margin-bottom: 10px; text-align: center;">
+							        Prefer to Meet in Person?
+							    </h3>
+							    <p style="color: #212529; text-align: center; margin-bottom: 25px; font-size: 1rem;">
+							        Visit us at our office for a personal consultation about your culinary needs.
+							    </p>
+							
+							    <div id="office-map" style="width: 90%; height: 500px; margin: 0 auto; border: 1px solid #BC544B; border-radius: 5px; box-shadow: 0 4px 15px rgba(144, 6, 3, 0.2);"></div>
+							</div>
+							
+							<!-- map location office -->
+
+							
                             <p>We look forward to hearing from you!</p>
 
                         </article>
@@ -154,6 +191,38 @@
             AOS.init();
         </script>
         <script src="js/custom-general.js"></script>
+
+		<!-- Leaflet CSS -->
+		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+		<!-- Leaflet JS -->
+		<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+		<script>
+		    // Office coordinates
+		    var officeLocation = [12.542333, 99.949889]; // 12°32'32.4"N 99°56'59.6"E
+		
+		    // Initialize the map
+		    var map = L.map('office-map').setView(officeLocation, 17);
+		
+		    // Add OpenStreetMap tiles
+		    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+		        attribution: '© OpenStreetMap',
+		        maxZoom: 19
+		    }).addTo(map);
+		
+		    // Create custom violet marker icon
+		    var violetIcon = L.divIcon({
+		        className: 'custom-marker',
+		        html: '<div style="background-color: #BC544B; width: 30px; height: 30px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); border: 2px solid white; box-shadow: 0 3px 10px rgba(0,0,0,0.3);"></div>',
+		        iconSize: [25, 25],
+		        iconAnchor: [15, 30],
+		        popupAnchor: [0, -30]
+		    });
+		
+		    // Add marker with popup
+		    var marker = L.marker(officeLocation, {icon: violetIcon}).addTo(map);
+		    marker.bindPopup("<b>We are here!</b><br>Kinthai Private Chef Service").openPopup();
+		</script>
+		
     </body>
 
 </html>
