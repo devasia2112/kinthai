@@ -64,6 +64,7 @@ a {
   margin: 0 auto;
 }
 
+/*
 .btn {
   padding: 0 20px;
   height: 40px;
@@ -75,6 +76,21 @@ a {
   background: transparent;
   cursor: pointer;
   color: #FFFFFF;
+} */
+.btn {
+  display: inline-block; /* key fix */
+  padding: 0 20px;
+  height: 40px;
+  line-height: 40px; /* vertically center text */
+  font-size: 1em;
+  font-weight: 900;
+  text-transform: uppercase;
+  border: 3px black solid;
+  border-radius: 5px;
+  background: red; /* or your desired color */
+  cursor: pointer;
+  color: #FFFFFF;
+  text-decoration: none; /* removes underline */
 }
 
 .grid {
@@ -496,9 +512,9 @@ footer > span {
         <div class="level trn">1 Half-Day Class</div>
         <h2 class="trn">1,500 Thai Baht</h2>
         <div>&nbsp;</div>		
-		<button class="btn trn" style="pointer-events: auto; opacity: 0.5;">
-			<a target="_blank" href="https://wa.me/660993530593?text=Hello,%20I%20am%20interested%20in%20your%20cooking%20class%20services%20in%20Hua%20Hin.">Contact WhatsApp</a>
-		</button>
+		<a target="_blank" href="https://wa.me/660993530593?text=Hello,%20I%20am%20interested%20in%20your%20cooking%20class%20services%20in%20Hua%20Hin." class="btn trn">
+			Contact WhatsApp
+		</a>
       </div>
       <div class="product" id="tenor" title="Please contact us on WhatsApp: +66 099 353 0593">
         <div class="level trn">3 Half-Day Class</div>
