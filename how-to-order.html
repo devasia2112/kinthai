@@ -117,6 +117,16 @@
   color: #FFFFFF;
   text-decoration: none; /* removes underline */
 }
+.image-row {
+    display: flex;
+    gap: 5px;
+    margin: 10px 0;
+}
+.image-row img {
+    width: 33.33%;
+    height: 100px;
+    object-fit: cover;
+}
 </style>
 
     </head>
@@ -149,6 +159,12 @@
         <div class="featured-img mt-3 mb-3">
             <img src="./img/private-chef.jpg" alt="Private Chef Hua Hin">
         </div>
+
+		<div class="image-row">
+		    <img src="./img/chef1.jpg">
+		    <img src="./img/chef2.jpg">
+		    <img src="./img/chef3.jpg">
+		</div>		
 
         <div class="service-step">
             <span class="step-number">1</span>
