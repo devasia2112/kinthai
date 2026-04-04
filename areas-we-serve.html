@@ -38,6 +38,28 @@
         <link rel="icon" type="image/png" sizes="32x32" href="./img/favicon-32x32.png">
         <link rel="icon" type="image/png" sizes="16x16" href="./img/favicon-16x16.png">
         <link rel="manifest" href="./img/site.webmanifest">
+
+		<!-- calc style -->
+		<style>
+		  .calc-section { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; margin-bottom: 12px; }
+		  .calc-label { font-size: 13px; color: var(--color-text-secondary); margin-bottom: 4px; }
+		  .calc-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+		  .calc-row label { font-size: 14px; color: var(--color-text-primary); flex: 1; }
+		  .calc-row input[type=range] { flex: 1.2; }
+		  .calc-row .val { font-size: 14px; font-weight: 500; min-width: 60px; text-align: right; color: var(--color-text-primary); }
+		  .section-title { font-size: 15px; font-weight: 500; color: var(--color-text-primary); margin: 0 0 12px; }
+		  .toggle-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+		  .toggle-row label { font-size: 14px; color: var(--color-text-primary); cursor: pointer; }
+		  input[type=checkbox] { width: 16px; height: 16px; cursor: pointer; }
+		  select { font-size: 14px; padding: 6px 8px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: var(--color-background-primary); color: var(--color-text-primary); width: 100%; margin-bottom: 8px; }
+		  .result-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+		  .result-card { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 1rem; text-align: center; }
+		  .result-label { font-size: 12px; color: var(--color-text-secondary); margin-bottom: 4px; }
+		  .result-val { font-size: 22px; font-weight: 500; color: var(--color-text-primary); }
+		  .note { font-size: 12px; color: var(--color-text-tertiary); margin-top: 10px; text-align: center; line-height: 1.5; }
+		  .breakdown { font-size: 12px; color: var(--color-text-secondary); margin-top: 12px; border-top: 0.5px solid var(--color-border-tertiary); padding-top: 10px; line-height: 2; }
+		  .breakdown span { float: right; color: var(--color-text-primary); }
+		</style>
 		
     </head>
 
@@ -116,19 +138,107 @@
 	
 	                </div>
 	            </div>
+
+				<!-- calc -->
+				<div class="col-md-8">
+					<div style="padding: 1rem 0;">
+					
+					<div class="calc-section">
+					  <p class="section-title">Transport</p>
+					  <div class="calc-row">
+					    <label>Distance (km, one way)</label>
+					    <input type="range" id="km" min="20" max="1250" value="100" step="10" oninput="update()">
+					    <span class="val" id="km-val">100 km</span>
+					  </div>
+					  <div class="calc-row">
+					    <label>Fuel price (THB/L)</label>
+					    <input type="range" id="fuel" min="28" max="65" value="42" step="1" oninput="update()">
+					    <span class="val" id="fuel-val">42 ฿/L</span>
+					  </div>
+					  <div class="toggle-row">
+					    <input type="checkbox" id="ferry" onchange="update()">
+					    <label for="ferry">Requires ferry (island destination)</label>
+					  </div>
+					</div>
+					
+					<div class="calc-section">
+					  <p class="section-title">Accommodation</p>
+					  <div class="toggle-row">
+					    <input type="checkbox" id="hotel" onchange="update()">
+					    <label for="hotel">Overnight stay required</label>
+					  </div>
+					  <div id="nights-row" class="calc-row" style="display:none;">
+					    <label>Number of nights</label>
+					    <input type="range" id="nights" min="1" max="5" value="1" step="1" oninput="update()">
+					    <span class="val" id="nights-val">1 night</span>
+					  </div>
+					</div>
+					
+					<div class="calc-section">
+					  <p class="section-title">Event</p>
+					  <div class="calc-row">
+					    <label>Number of guests</label>
+					    <input type="range" id="guests" min="2" max="30" value="6" step="1" oninput="update()">
+					    <span class="val" id="guests-val">6 guests</span>
+					  </div>
+					  <div class="calc-label">Meals included</div>
+					  <select id="meals" onchange="update()">
+					    <option value="one">One meal</option>
+					    <option value="two">Two meals</option>
+					    <option value="full" selected>Full day (breakfast, lunch & dinner)</option>
+					  </select>
+					  <div class="calc-label">Cuisine type</div>
+					  <select id="cuisine" onchange="update()">
+					    <option value="thai">Thai / local</option>
+					    <option value="western" selected>Western / international</option>
+					  </select>
+					  <div class="toggle-row">
+					    <input type="checkbox" id="bbq" onchange="update()">
+					    <label for="bbq">BBQ station required</label>
+					  </div>
+					  <div class="toggle-row">
+					    <input type="checkbox" id="waiter" onchange="update()">
+					    <label for="waiter">Waiter / waitress</label>
+					  </div>
+					  <div class="toggle-row">
+					    <input type="checkbox" id="bartender" onchange="update()">
+					    <label for="bartender">Bartender</label>
+					  </div>
+					</div>
+					
+					<div class="calc-section">
+					  <p class="section-title">Estimated cost</p>
+					  <div class="result-grid">
+					    <div class="result-card">
+					      <div class="result-label">Minimum estimate</div>
+					      <div class="result-val" id="res-min">—</div>
+					    </div>
+					    <div class="result-card">
+					      <div class="result-label">Maximum estimate</div>
+					      <div class="result-val" id="res-max">—</div>
+					    </div>
+					  </div>
+					  <div class="breakdown" id="breakdown"></div>
+					  <p class="note">Ball-park estimate only. Final pricing depends on exact location, menu, and availability. Contact us for a detailed quote.</p>
+					</div>
+					
+					</div>
+				</div>
+				<!-- calc -->
+				
 	        </div>
 	    </div>
 	</div>
 
-
     <div id="footer"></div>
-    <script>
-    fetch('footer.html')
-        .then(response => response.text())
-        .then(data => {
-        document.getElementById('footer').innerHTML = data;
-        });
-    </script>
+		
+	    <script>
+	    fetch('footer.html')
+	        .then(response => response.text())
+	        .then(data => {
+	        document.getElementById('footer').innerHTML = data;
+	        });
+	    </script>
 
         <script src="js/bootstrap.min.js"></script>
         <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
@@ -136,6 +246,73 @@
             AOS.init();
         </script>
         <script src="js/custom-general.js"></script>
+
+		<!-- calc script -->
+		<script>
+		function fmt(n){ return Math.round(n).toLocaleString() + ' ฿'; }
+		
+		function update(){
+		  const km = +document.getElementById('km').value;
+		  const fuelPrice = +document.getElementById('fuel').value;
+		  const ferry = document.getElementById('ferry').checked;
+		  const hotelOn = document.getElementById('hotel').checked;
+		  const nights = +document.getElementById('nights').value;
+		  const guests = +document.getElementById('guests').value;
+		  const meals = document.getElementById('meals').value;
+		  const cuisine = document.getElementById('cuisine').value;
+		  const bbq = document.getElementById('bbq').checked;
+		  const waiter = document.getElementById('waiter').checked;
+		  const bartender = document.getElementById('bartender').checked;
+		
+		  document.getElementById('km-val').textContent = km + ' km';
+		  document.getElementById('fuel-val').textContent = fuelPrice + ' ฿/L';
+		  document.getElementById('nights-val').textContent = nights + (nights===1?' night':' nights');
+		  document.getElementById('guests-val').textContent = guests + ' guests';
+		  document.getElementById('nights-row').style.display = hotelOn ? 'flex' : 'none';
+		
+		  const fuelCostMin = (km * 2 / 10) * fuelPrice;
+		  const fuelCostMax = fuelCostMin * 1.15;
+		  const ferryMin = ferry ? 1600 : 0;
+		  const ferryMax = ferry ? 3000 : 0;
+		  const transportMin = fuelCostMin + ferryMin;
+		  const transportMax = fuelCostMax + ferryMax;
+		
+		  const hotelMin = hotelOn ? nights * 800 : 0;
+		  const hotelMax = hotelOn ? nights * 1200 : 0;
+		
+		  const chefMin = meals === 'one' ? 4500 : meals === 'two' ? 5200 : 6000;
+		  const chefMax = chefMin;
+		  const assistantMin = guests > 1 ? 2500 : 0;
+		  const assistantMax = guests > 1 ? 3000 : 0;
+		  const bbqMin = bbq ? 1500 : 0;
+		  const bbqMax = bbq ? 1800 : 0;
+		  const waiterMin = waiter ? 1200 : 0;
+		  const waiterMax = waiter ? 1200 : 0;
+		  const bartMin = bartender ? 3000 : 0;
+		  const bartMax = bartender ? 3500 : 0;
+		  const staffMin = chefMin + assistantMin + bbqMin + waiterMin + bartMin;
+		  const staffMax = chefMax + assistantMax + bbqMax + waiterMax + bartMax;
+		
+		  const ingMin = cuisine === 'thai' ? guests * 1300 : guests * 1900;
+		  const ingMax = cuisine === 'thai' ? guests * 1300 : guests * 3900;
+		
+		  const totalMin = transportMin + hotelMin + staffMin + ingMin;
+		  const totalMax = transportMax + hotelMax + staffMax + ingMax;
+		
+		  document.getElementById('res-min').textContent = fmt(totalMin);
+		  document.getElementById('res-max').textContent = fmt(totalMax);
+		
+		  let rows = '';
+		  rows += `Transport (${km*2} km round trip)${ferry?' + ferry':''}:<span>${fmt(transportMin)} – ${fmt(transportMax)}</span><br>`;
+		  if(hotelOn) rows += `Accommodation (${nights} night${nights>1?'s':''}):<span>${fmt(hotelMin)} – ${fmt(hotelMax)}</span><br>`;
+		  rows += `Chef & staff:<span>${fmt(staffMin)} – ${fmt(staffMax)}</span><br>`;
+		  rows += `Ingredients (${guests} guests, ${cuisine==='thai'?'Thai':'western'}):<span>${fmt(ingMin)} – ${fmt(ingMax)}</span>`;
+		  document.getElementById('breakdown').innerHTML = rows;
+		}
+		update();
+		</script>
+		<!-- calc script -->
+
     </body>
 
 </html>
