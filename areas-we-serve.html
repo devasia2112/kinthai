@@ -59,6 +59,8 @@
 		  .note { font-size: 12px; color: var(--color-text-tertiary); margin-top: 10px; text-align: center; line-height: 1.5; }
 		  .breakdown { font-size: 12px; color: var(--color-text-secondary); margin-top: 12px; border-top: 0.5px solid var(--color-border-tertiary); padding-top: 10px; line-height: 2; }
 		  .breakdown span { float: right; color: var(--color-text-primary); }
+		  .chef-estimator { border: 2px solid #C0392B; border-radius: 12px; padding: 1.5rem; margin: 2rem 0; }
+		  .chef-estimator h2 { color: #C0392B; font-size: 1.3rem; margin: 0 0 1.2rem; text-align: center; letter-spacing: 0.5px; }
 		</style>
 		
     </head>
@@ -142,85 +144,93 @@
 				<!-- calc -->
 				<div class="col-md-8">
 					<div style="padding: 1rem 0;">
-					
-					<div class="calc-section">
-					  <p class="section-title">Transport</p>
-					  <div class="calc-row">
-					    <label>Distance (km, one way)</label>
-					    <input type="range" id="km" min="20" max="1250" value="100" step="10" oninput="update()">
-					    <span class="val" id="km-val">100 km</span>
-					  </div>
-					  <div class="calc-row">
-					    <label>Fuel price (THB/L)</label>
-					    <input type="range" id="fuel" min="28" max="65" value="42" step="1" oninput="update()">
-					    <span class="val" id="fuel-val">42 ฿/L</span>
-					  </div>
-					  <div class="toggle-row">
-					    <input type="checkbox" id="ferry" onchange="update()">
-					    <label for="ferry">Requires ferry (island destination)</label>
-					  </div>
-					</div>
-					
-					<div class="calc-section">
-					  <p class="section-title">Accommodation</p>
-					  <div class="toggle-row">
-					    <input type="checkbox" id="hotel" onchange="update()">
-					    <label for="hotel">Overnight stay required</label>
-					  </div>
-					  <div id="nights-row" class="calc-row" style="display:none;">
-					    <label>Number of nights</label>
-					    <input type="range" id="nights" min="1" max="5" value="1" step="1" oninput="update()">
-					    <span class="val" id="nights-val">1 night</span>
-					  </div>
-					</div>
-					
-					<div class="calc-section">
-					  <p class="section-title">Event</p>
-					  <div class="calc-row">
-					    <label>Number of guests</label>
-					    <input type="range" id="guests" min="2" max="30" value="6" step="1" oninput="update()">
-					    <span class="val" id="guests-val">6 guests</span>
-					  </div>
-					  <div class="calc-label">Meals included</div>
-					  <select id="meals" onchange="update()">
-					    <option value="one">One meal</option>
-					    <option value="two">Two meals</option>
-					    <option value="full" selected>Full day (breakfast, lunch & dinner)</option>
-					  </select>
-					  <div class="calc-label">Cuisine type</div>
-					  <select id="cuisine" onchange="update()">
-					    <option value="thai">Thai / local</option>
-					    <option value="western" selected>Western / international</option>
-					  </select>
-					  <div class="toggle-row">
-					    <input type="checkbox" id="bbq" onchange="update()">
-					    <label for="bbq">BBQ station required</label>
-					  </div>
-					  <div class="toggle-row">
-					    <input type="checkbox" id="waiter" onchange="update()">
-					    <label for="waiter">Waiter / waitress</label>
-					  </div>
-					  <div class="toggle-row">
-					    <input type="checkbox" id="bartender" onchange="update()">
-					    <label for="bartender">Bartender</label>
-					  </div>
-					</div>
-					
-					<div class="calc-section">
-					  <p class="section-title">Estimated cost</p>
-					  <div class="result-grid">
-					    <div class="result-card">
-					      <div class="result-label">Minimum estimate</div>
-					      <div class="result-val" id="res-min">—</div>
-					    </div>
-					    <div class="result-card">
-					      <div class="result-label">Maximum estimate</div>
-					      <div class="result-val" id="res-max">—</div>
-					    </div>
-					  </div>
-					  <div class="breakdown" id="breakdown"></div>
-					  <p class="note">Ball-park estimate only. Final pricing depends on exact location, menu, and availability. Contact us for a detailed quote.</p>
-					</div>
+
+						<!-- wrapper with rounded border -->
+						<div class="chef-estimator">
+
+							<h2 class="display-4 text-center">Private Chef Estimator</h2>
+							
+							<div class="calc-section">
+							  <p class="section-title">Transport</p>
+							  <div class="calc-row">
+							    <label>Distance (km, one way)</label>
+							    <input type="range" id="km" min="20" max="1250" value="100" step="10" oninput="update()">
+							    <span class="val" id="km-val">100 km</span>
+							  </div>
+							  <div class="calc-row">
+							    <label>Fuel price (THB/L)</label>
+							    <input type="range" id="fuel" min="28" max="65" value="42" step="1" oninput="update()">
+							    <span class="val" id="fuel-val">42 ฿/L</span>
+							  </div>
+							  <div class="toggle-row">
+							    <input type="checkbox" id="ferry" onchange="update()">
+							    <label for="ferry">Requires ferry (island destination)</label>
+							  </div>
+							</div>
+							
+							<div class="calc-section">
+							  <p class="section-title">Accommodation</p>
+							  <div class="toggle-row">
+							    <input type="checkbox" id="hotel" onchange="update()">
+							    <label for="hotel">Overnight stay required</label>
+							  </div>
+							  <div id="nights-row" class="calc-row" style="display:none;">
+							    <label>Number of nights</label>
+							    <input type="range" id="nights" min="1" max="5" value="1" step="1" oninput="update()">
+							    <span class="val" id="nights-val">1 night</span>
+							  </div>
+							</div>
+							
+							<div class="calc-section">
+							  <p class="section-title">Event</p>
+							  <div class="calc-row">
+							    <label>Number of guests</label>
+							    <input type="range" id="guests" min="2" max="30" value="6" step="1" oninput="update()">
+							    <span class="val" id="guests-val">6 guests</span>
+							  </div>
+							  <div class="calc-label">Meals included</div>
+							  <select id="meals" onchange="update()">
+							    <option value="one">One meal</option>
+							    <option value="two">Two meals</option>
+							    <option value="full" selected>Full day (breakfast, lunch & dinner)</option>
+							  </select>
+							  <div class="calc-label">Cuisine type</div>
+							  <select id="cuisine" onchange="update()">
+							    <option value="thai">Thai / local</option>
+							    <option value="western" selected>Western / international</option>
+							  </select>
+							  <div class="toggle-row">
+							    <input type="checkbox" id="bbq" onchange="update()">
+							    <label for="bbq">BBQ station required</label>
+							  </div>
+							  <div class="toggle-row">
+							    <input type="checkbox" id="waiter" onchange="update()">
+							    <label for="waiter">Waiter / waitress</label>
+							  </div>
+							  <div class="toggle-row">
+							    <input type="checkbox" id="bartender" onchange="update()">
+							    <label for="bartender">Bartender</label>
+							  </div>
+							</div>
+							
+							<div class="calc-section">
+							  <p class="section-title">Estimated cost</p>
+							  <div class="result-grid">
+							    <div class="result-card">
+							      <div class="result-label">Minimum estimate</div>
+							      <div class="result-val" id="res-min">—</div>
+							    </div>
+							    <div class="result-card">
+							      <div class="result-label">Maximum estimate</div>
+							      <div class="result-val" id="res-max">—</div>
+							    </div>
+							  </div>
+							  <div class="breakdown" id="breakdown"></div>
+							  <p class="note">Ball-park estimate only. Final pricing depends on exact location, menu, and availability. Contact us for a detailed quote.</p>
+							</div>
+
+						</div>
+						<!-- wrapper ends -->
 					
 					</div>
 				</div>
