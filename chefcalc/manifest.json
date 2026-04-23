@@ -1,7 +1,8 @@
 {
   "name": "Chef Pricing Tool",
   "short_name": "ChefCalc",
-  "start_url": ".",
+  "start_url": "/chefcalc/private_chef_cost_calculator_v4.html",
+  "scope": "/chefcalc/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#000000",
