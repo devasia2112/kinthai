@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#000000">
+</head>
+
+<style>
+html {
+  font-size: 16px; /* desktop default */
+}
+
+.calc-section {
+  background: var(--color-background-primary);
+  border: 0.5px solid var(--color-border-tertiary);
+  border-radius: var(--border-radius-lg);
+  padding: 1rem;
+  margin-bottom: 12px;
+}
+
+/* TEXT SCALE */
+.calc-label {
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  margin-bottom: 4px;
+}
+
+.calc-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  flex-wrap: wrap; /* 👈 important for mobile */
+}
+
+.calc-row label {
+  font-size: 1rem;
+  color: var(--color-text-primary);
+  flex: 1;
+  min-width: 120px;
+}
+
+.calc-row input[type=range] {
+  flex: 1.2;
+  min-width: 140px;
+}
+
+.calc-row .val {
+  font-size: 1rem;
+  font-weight: 600;
+  min-width: 70px;
+  text-align: right;
+}
+
+.section-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+h1 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin: 0 10px 12px;
+}
+
+/* TOGGLES */
+.toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.toggle-row label {
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+input[type=checkbox] {
+  width: 18px;
+  height: 18px;
+}
+
+/* INPUTS */
+select {
+  font-size: 1rem;
+  padding: 8px;
+  border-radius: var(--border-radius-md);
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.calc-row input[type=number] {
+  width: 80px;
+  padding: 6px;
+  font-size: 1rem;
+}
+
+/* RESULTS */
+.result-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.result-card {
+  padding: 0.8rem;
+  text-align: center;
+}
+
+.result-label {
+  font-size: 0.8rem;
+}
+
+.result-val {
+  font-size: 1.6rem;
+  font-weight: 600;
+}
+
+/* BREAKDOWN */
+.breakdown {
+  font-size: 0.85rem;
+  margin-top: 12px;
+  line-height: 1.8;
+}
+
+.breakdown span {
+  float: right;
+  font-weight: 500;
+}
+
+/* note */
+.note {
+  font-size: 0.8rem;
+  margin-top: 25px;
+}
+
+/* MOBILE BOOST */
+@media (max-width: 600px) {
+
+  .calc-section {
+    padding: 0.9rem;
+  }
+
+  .calc-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .calc-row label {
+    font-size: 1.05rem;
+  }
+
+  .calc-row .val {
+    text-align: left;
+    font-size: 1.1rem;
+  }
+
+  .result-grid {
+    grid-template-columns: 1fr; /* stack cards */
+  }
+
+  .result-val {
+    font-size: 1.8rem;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+  }
+
+  .section-title {
+    font-size: 1.2rem;
+  }
+
+  /* Mobile override */
+  html {
+    font-size: 16px;
+  }
+}
+input[type=range] {
+  height: 28px;
+}
+input, select {
+  min-height: 40px;
+}
+</style>
+
+<div style="padding: 1rem 0;">
+
+<h1>Realistic Pricing Engine</h1>
+<hr>
+
+<div class="calc-section">
+  <p class="section-title">Agency booking</p>
+  <div class="toggle-row">
+    <input type="checkbox" id="agency" onchange="update()">
+    <label for="agency">Agency booking (commission included)</label>
+  </div>
+</div>
+
+<div class="calc-section">
+  <p class="section-title">Transport</p>
+  <div class="calc-row">
+    <label>Distance (km, one way)</label>
+    <input type="range" id="km" min="20" max="1250" value="100" step="10" oninput="update()">
+    <span class="val" id="km-val">100 km</span>
+  </div>
+  <div class="calc-row">
+    <label>Fuel price (THB/L)</label>
+    <input type="range" id="fuel" min="28" max="65" value="42" step="1" oninput="update()">
+    <span class="val" id="fuel-val">42 ฿/L</span>
+  </div>
+  <div class="toggle-row">
+    <input type="checkbox" id="ferry" onchange="update()">
+    <label for="ferry">Requires ferry (island destination)</label>
+  </div>
+</div>
+
+<div class="calc-section">
+  <p class="section-title">Accommodation</p>
+  <div class="toggle-row">
+    <input type="checkbox" id="hotel" onchange="update()">
+    <label for="hotel">Overnight stay required</label>
+  </div>
+  <div id="nights-row" class="calc-row" style="display:none;">
+    <label>Number of nights</label>
+    <input type="range" id="nights" min="1" max="30" value="1" step="1" oninput="update()">
+    <span class="val" id="nights-val">1 night</span>
+  </div>
+</div>
+
+<div class="calc-section">
+  <p class="section-title">Event</p>
+  <div class="calc-row">
+    <label>Number of guests</label>
+    <input type="range" id="guests" min="1" max="30" value="6" step="1" oninput="update()">
+    <span class="val" id="guests-val">6 guests</span>
+  </div><br>
+
+
+  <div class="section-title">Meals Included | Effort Weights (0.8 / 1.0 / 1.3 / 1.2)</div>
+  <div class="calc-row">
+    <label>Breakfast</label>
+    <input type="number" id="breakfast" min="0" max="10" value="0" onchange="update()">
+  </div>
+  <div class="calc-row">
+    <label>Lunch</label>
+    <input type="number" id="lunch" min="0" max="10" value="0" onchange="update()">
+  </div>
+  <div class="calc-row">
+    <label>Dinner</label>
+    <input type="number" id="dinner" min="0" max="10" value="0" onchange="update()">
+  </div>
+  <div class="calc-row">
+    <label>Brunch</label>
+    <input type="number" id="brunch" min="0" max="10" value="0" onchange="update()">
+  </div>
+
+
+  <div class="section-title">Cuisine type</div>
+  <select id="cuisine" onchange="update()">
+    <option value="thai">Thai / local</option>
+    <option value="western" selected>Western / international</option>
+  </select>
+
+
+  <div class="section-title">Menu style</div>
+  <select id="menu-style" onchange="update()">
+    <option value="simple">Simple / family style</option>
+    <option value="standard" selected>Standard plated</option>
+    <option value="tasting">Tasting / fine dining</option>
+  </select>
+
+
+  <div class="calc-row">
+    <label class="section-title">Number of days</label>
+    <input type="range" id="days" min="1" max="10" value="1" step="1" oninput="update()">
+    <span class="val" id="days-val">1 day</span>
+  </div>
+
+  <!-- Luxury Ingredients Toggle -->
+  <div class="toggle-row">
+    <input type="checkbox" id="luxury" onchange="update()">
+    <label for="luxury">Luxury ingredients (lobster, wagyu, premium seafood)</label>
+  </div>
+  <!-- Luxury Ingredients Toggle -->
+
+  <div class="toggle-row">
+
+    <div class="toggle-row">
+        <input type="checkbox" id="bbq" onchange="toggleDays('bbq')">
+        <label for="bbq">BBQ station required</label>
+    </div>
+    <div id="bbq-days-row" class="calc-row" style="display:none;">
+        <label>BBQ days</label>
+        <input type="range" id="bbq-days" min="1" max="10" value="1" step="1" oninput="update()">
+        <span class="val" id="bbq-days-val">1 day</span>
+    </div>
+
+  </div>
+
+  <div class="toggle-row">
+    <input type="checkbox" id="waiter" onchange="toggleDays('waiter')">
+    <label for="waiter">Waiter / waitress</label>
+
+    <div id="waiter-days-row" class="calc-row" style="display:none;">
+      <label>Waiter days</label>
+      <input type="range" id="waiter-days" min="1" max="10" value="1" step="1" oninput="update()">
+      <span class="val" id="waiter-days-val">1 day</span>
+    </div>
+  </div>
+
+  <div class="toggle-row">
+    <input type="checkbox" id="bartender" onchange="toggleDays('bartender')">
+    <label for="bartender">Bartender</label>
+
+    <div id="bartender-days-row" class="calc-row" style="display:none;">
+      <label>Bartender days</label>
+      <input type="range" id="bartender-days" min="1" max="10" value="1" step="1" oninput="update()">
+      <span class="val" id="bartender-days-val">1 day</span>
+    </div>
+  </div>
+
+</div>
+
+<div class="calc-section">
+  <p class="section-title">Estimated cost</p>
+  <div class="result-grid">
+    <div class="result-card">
+      <div class="result-label">Minimum estimate</div>
+      <div class="result-val" id="res-min">—</div>
+    </div>
+    <div class="result-card">
+      <div class="result-label">Maximum estimate</div>
+      <div class="result-val" id="res-max">—</div>
+    </div>
+  </div>
+  <div class="breakdown" id="breakdown"></div>
+  <p class="note"><i>🖝 Ball-park estimate only. Final pricing depends on exact location, menu, and availability. Contact us for a detailed quote.</i></p>
+  <div id="warnings" style="color:#d9534f; font-size:12px; margin-top:10px;"></div>
+</div>
+
+
+<!-- SUGGESTED QUOTE -->
+<div style="text-align:center; margin-top:10px;">
+  <div class="result-label">
+    Suggested quote
+  </div>
+  <div id="res-suggested" class="result-val">
+    —
+  </div>
+</div>
+
+
+<button onclick="generateQuote()" style="margin-top:10px; padding:8px 12px; cursor:pointer;">
+  Generate Quick Quote
+</button>
+<textarea id="quote-output" style="width:100%; height:140px; margin-top:10px;"></textarea>
+
+
+</div>
+
+
+
+<script>
+function fmt(n){ return Math.round(n).toLocaleString() + ' ฿'; }
+
+function toggleDays(type){
+  const checkbox = document.getElementById(type);
+  const row = document.getElementById(type + '-days-row');
+  row.style.display = checkbox.checked ? 'flex' : 'none';
+  update();
+}
+
+function update(){
+
+  const agency = document.getElementById('agency').checked;
+  const km = +document.getElementById('km').value;
+  const fuelPrice = +document.getElementById('fuel').value;
+  const ferry = document.getElementById('ferry').checked;
+  const hotelOn = document.getElementById('hotel').checked;
+  const nights = +document.getElementById('nights').value;
+
+  /* calculate based on num. of days */
+  const days = +document.getElementById('days').value;
+  document.getElementById('days-val').textContent = days + (days === 1 ? ' day' : ' days');
+
+  const guests = +document.getElementById('guests').value;
+  const cuisine = document.getElementById('cuisine').value;
+  const menuStyle = document.getElementById('menu-style').value;
+  const bbq = document.getElementById('bbq').checked;
+
+  /* effort weights (based on real operations) */
+  const breakfast = +document.getElementById('breakfast').value;
+  const lunch = +document.getElementById('lunch').value;
+  const dinner = +document.getElementById('dinner').value;
+  const brunch = +document.getElementById('brunch').value;
+
+  const totalEffort =
+    (breakfast * 0.8) +
+    (lunch * 1.0) +
+    (dinner * 1.3) +
+    (brunch * 1.2);
+
+
+  // menu style
+  let menuStyleFactor = 1;
+  if (menuStyle === 'simple') menuStyleFactor = 0.9;
+  if (menuStyle === 'standard') menuStyleFactor = 1;
+  if (menuStyle === 'tasting') menuStyleFactor = 1.25;
+
+
+  //const bbqDays = bbq ? +document.getElementById('bbq-days').value : 0;
+  //document.getElementById('bbq-days-val').textContent = bbqDays + (bbqDays === 1 ? ' day' : ' days');
+  let bbqDays = 0;
+  if (bbq) {
+    bbqDays = +document.getElementById('bbq-days').value;
+    document.getElementById('bbq-days-val').textContent =
+    bbqDays + (bbqDays === 1 ? ' day' : ' days');
+  }
+
+  const waiter = document.getElementById('waiter').checked;
+  const bartender = document.getElementById('bartender').checked;
+
+  /* Luxury Ingredients Toggle */
+  const luxury = document.getElementById('luxury').checked;
+
+  document.getElementById('km-val').textContent = km + ' km';
+  document.getElementById('fuel-val').textContent = fuelPrice + ' ฿/L';
+  document.getElementById('nights-val').textContent = nights + (nights===1?' night':' nights');
+  document.getElementById('guests-val').textContent = guests + ' guests';
+  document.getElementById('nights-row').style.display = hotelOn ? 'flex' : 'none';
+
+  /* =========================
+     WARNINGS SYSTEM
+  ========================== */
+  let warnings = [];
+
+  if (guests >= 10 && (totalEffort / days) > 2.2 && bbq) {
+    warnings.push("Large group + full day + BBQ may require menu simplification.");
+  }
+  if (guests >= 20 && (totalEffort / days) > 1.5) {
+    warnings.push("Large group with multiple meals — consider reducing variety or increasing staff.");
+  }
+  if (guests === 1 && bbq) {
+    warnings.push("BBQ setup for 1 guest is inefficient and costly.");
+  }
+  /* Luxury Ingredients Toggle Warning */
+  if (luxury && guests >= 15) {
+    warnings.push("Luxury ingredients with large group — cost may increase significantly.");
+  }
+
+  /* =========================
+     COMPLEXITY SYSTEM
+  ========================== */
+  let menuLoad = 0;
+
+  menuLoad += totalEffort / days;
+
+  if (cuisine === 'western') menuLoad += 1.2;
+  if (cuisine === 'thai') menuLoad += 1;
+
+  if (bbq) menuLoad += 2 * (bbqDays / days);
+
+  if (guests >= 10) menuLoad += 1;
+  if (guests >= 20) menuLoad += 2;
+
+  if (menuLoad > 6) {
+    warnings.push("Menu complexity is high — consider reducing dish variety.");
+  }
+  if (menuLoad > 8) {
+    warnings.push("Menu likely too complex for smooth execution.");
+  }
+
+  /* =========================
+     TRANSPORT
+  ========================== */
+  const fuelCostMin = (km * 2 / 10) * fuelPrice;
+  const fuelCostMax = fuelCostMin * 1.15;
+  const ferryMin = ferry ? 400 : 0;
+  const ferryMax = ferry ? 3000 : 0;
+
+  const transportMin = fuelCostMin + ferryMin;
+  const transportMax = fuelCostMax + ferryMax;
+
+  /* =========================
+     HOTEL
+  ========================== */
+  const hotelMin = hotelOn ? nights * 600 : 0;
+  const hotelMax = hotelOn ? nights * 1200 : 0;
+
+  /* =========================
+     STAFF
+  ========================== */
+
+  // chef cost scales with total meals (not per day blindly)
+  //const chefMin = totalMeals * 1800;
+  //const chefMax = totalMeals * 2000;
+  //const chefMax = chefMin;
+  const chefMin = totalEffort * 1800;
+  const chefMax = totalEffort * 2000;
+
+
+  /* Auto Staff Scaling (kitchen only) */
+  let assistantCount = 0;
+
+  if (guests <= 4) assistantCount = 0;
+  else if (guests <= 8) assistantCount = 1;
+  else if (guests <= 16) assistantCount = 2;
+  else assistantCount = 3;
+
+  // extra pressure from complexity
+  if (menuLoad > 6) assistantCount += 1;
+  if (menuLoad > 8) assistantCount += 1;
+
+  // cap it (important)
+  assistantCount = Math.min(assistantCount, 4);
+
+  const assistantMin = assistantCount * 2500;
+  const assistantMax = assistantCount * 3000;
+  /* Auto Staff Scaling (kitchen only) */
+
+
+  //const bbqDays = bbq ? 1 : 0; // assume 1 event day
+  const bbqMin = bbqDays * 1500;
+  const bbqMax = bbqDays * 1800;
+
+
+  /* bartender */
+  let bartenderDays = 0;
+  if (bartender) {
+    bartenderDays = +document.getElementById('bartender-days').value;
+    document.getElementById('bartender-days-val').textContent =
+      bartenderDays + (bartenderDays === 1 ? ' day' : ' days');
+  }
+  //const bartenderDays = bartender ? 1 : 0;
+  const bartMin = bartenderDays * 2800;
+  const bartMax = bartenderDays * 3500;
+
+  /* waiter */
+  /* const waiterDays = waiter ? days : 0; // waiters often full duration */
+  let waiterDays = 0;
+  if (waiter) {
+    waiterDays = +document.getElementById('waiter-days').value;
+    document.getElementById('waiter-days-val').textContent =
+      waiterDays + (waiterDays === 1 ? ' day' : ' days');
+  }
+  const waiterMin = waiterDays * 1200;
+  const waiterMax = waiterDays * 1200;
+
+  /* Do NOT treat them like BBQ (too strong) and also recalculate for ingredient pressure: */
+  if (waiter) menuLoad += 0.5 * (waiterDays / days);
+  if (bartender) menuLoad += 0.5 * (bartenderDays / days);
+
+
+  const staffDays = days;
+  const staffMin = chefMin + assistantMin + bbqMin + waiterMin + bartMin;
+  const staffMax = chefMax + assistantMax + bbqMax + waiterMax + bartMax;
+
+
+  /* =========================
+     INGREDIENTS (NEW LOGIC)
+  ========================== */
+  let baseMin, baseMax;
+
+  if (cuisine === 'thai') {
+    baseMin = 1200;
+    baseMax = 2200;
+  } else {
+    baseMin = 1600;
+    baseMax = 3200;
+  }
+
+  let complexityFactor = 1;
+
+  if (bbq) complexityFactor += 0.3 * (bbqDays / days);
+  if (waiter) complexityFactor += 0.05 * (waiterDays / days);
+  if (bartender) complexityFactor += 0.08 * (bartenderDays / days);
+
+  if ((totalEffort / days) > 2.2) complexityFactor += 0.25;
+
+  if (guests >= 10) complexityFactor += 0.1;
+  if (luxury) complexityFactor += 0.5;
+
+
+  /* Ingredient courses effort introduction to normalize prices instead of use generic ones */
+  const effortPerDay = totalEffort / days;
+
+  // normalize so 1.5 ≈ "standard day"
+  const effortFactor = effortPerDay / 1.5;
+
+  // clamp to avoid extreme swings
+  const safeEffortFactor = Math.max(0.7, Math.min(effortFactor, 1.6));
+
+  const ingMin = guests * baseMin * complexityFactor * safeEffortFactor * menuStyleFactor;
+  const ingMax = guests * baseMax * complexityFactor * safeEffortFactor * menuStyleFactor;
+
+  menuLoad += (menuStyle === 'tasting' ? 1.5 : 0);
+
+
+
+  /* =========================
+     SMALL GROUP FLOOR (CRITICAL FIX)
+  ========================= */
+  let minExperienceMin = 0;
+  let minExperienceMax = 0;
+
+  // trigger for small private dining
+  if (guests <= 2 && days === 1 && dinner > 0) {
+
+    if (luxury || bbq) {
+      // premium couple dining
+      minExperienceMin = 11900;
+      minExperienceMax = 14900;
+    } else {
+      // standard couple dining
+      minExperienceMin = 9900;
+      minExperienceMax = 12900;
+    }
+  }
+
+
+
+  /* =========================
+     TOTAL
+  ========================== */
+  let agencyFactor = agency ? 1.2 : 1;
+  let totalMin = transportMin + hotelMin + staffMin + ingMin;
+  let totalMax = transportMax + hotelMax + staffMax + ingMax;
+
+  // APPLY FLOOR
+  if (minExperienceMin > 0) {
+    totalMin = Math.max(totalMin, minExperienceMin);
+    totalMax = Math.max(totalMax, minExperienceMax);
+  }
+  if (minExperienceMin > 0) {
+    warnings.push("Small group pricing adjusted to minimum experience rate.");
+  }
+
+  // agency AFTER floor
+  totalMin *= agencyFactor;
+  totalMax *= agencyFactor;
+
+
+  document.getElementById('res-min').textContent = fmt(totalMin);
+  document.getElementById('res-max').textContent = fmt(totalMax);
+
+
+
+  /***************************
+   SMART QUOTE SUGGESTION
+  ***************************/
+  let quoteSuggestion;
+
+  // base position (slightly above middle)
+  let position = 0.6;
+
+  // push higher if complex
+  if (luxury) position += 0.15;
+  if (bbq) position += 0.1;
+  if (guests >= 10) position += 0.05;
+  if (menuLoad > 6) position += 0.05;
+  if (menuLoad > 8) position += 0.05;
+
+  // clamp (important)
+  position = Math.min(position, 0.9);
+  // final suggested price
+  quoteSuggestion = totalMin + (totalMax - totalMin) * position;
+  quoteSuggestion = Math.round(quoteSuggestion / 500) * 500;
+  document.getElementById('res-suggested').textContent = fmt(quoteSuggestion);
+
+
+
+  /***************************
+   DYSPLAY RESULTS
+  ***************************/
+  let rows = '';
+  rows += `<strong>Event Summary</strong><br>`;
+  rows += `${guests} guests • ${days} day${days>1?'s':''}<br>`;
+  rows += `Meals: ${breakfast} breakfast, ${lunch} lunch, ${dinner} dinner, ${brunch} brunch<br>`;
+  rows += `Cuisine: ${cuisine === 'thai' ? 'Thai' : 'Western'}${luxury ? ' • Luxury ingredients' : ''}<br>`;
+  rows += `Menu style: ${menuStyle}<br><br>`;
+  rows += `<strong>Cost Breakdown</strong><br>`;
+  rows += `Transport:<span>${fmt(transportMin)} – ${fmt(transportMax)}</span><br>`;
+  if(hotelOn){
+      rows += `Accommodation:<span>${fmt(hotelMin)} – ${fmt(hotelMax)}</span><br>`;
+  }
+  rows += `Chef & kitchen team:<span>${fmt(staffMin)} – ${fmt(staffMax)}</span><br>`;
+  if (bbqDays > 0){
+      rows += `BBQ setup (${bbqDays} day${bbqDays>1?'s':''}):<span>${fmt(bbqMin)} – ${fmt(bbqMax)}</span><br>`;
+  }
+  if (waiterDays > 0){
+      rows += `Service staff (${waiterDays} day${waiterDays>1?'s':''}):<span>${fmt(waiterMin)} – ${fmt(waiterMax)}</span><br>`;
+  }
+  if (bartenderDays > 0){
+      rows += `Bartender (${bartenderDays} day${bartenderDays>1?'s':''}):<span>${fmt(bartMin)} – ${fmt(bartMax)}</span><br>`;
+  }
+  rows += `Ingredients:<span>${fmt(ingMin)} – ${fmt(ingMax)}</span><br>`;
+
+  document.getElementById('warnings').innerHTML = warnings.join('<br>');
+  document.getElementById('breakdown').innerHTML = rows;
+
+
+  /* =========================
+     CONSOLE DEBUG
+  ========================== */
+  console.log("Waiter days:", waiterDays);
+  console.log("Waiter cost:", waiterMin);
+  console.log("Agency checked:", agency);
+  console.log("Agency factor:", agencyFactor);
+}
+
+/* auto quote generator */
+function generateQuote(){
+
+  const guests = +document.getElementById('guests').value;
+  const days = +document.getElementById('days').value;
+  const cuisine = document.getElementById('cuisine').value;
+  const luxury = document.getElementById('luxury').checked;
+  const bbq = document.getElementById('bbq').checked;
+  const waiter = document.getElementById('waiter').checked;
+  const bartender = document.getElementById('bartender').checked;
+  const agency = document.getElementById('agency').checked;
+
+  const min = document.getElementById('res-min').textContent;
+  const max = document.getElementById('res-max').textContent;
+
+  const sggstdQuote = document.getElementById('res-suggested').textContent;
+
+
+  // Meal summary
+  const breakfast = +document.getElementById('breakfast').value;
+  const lunch = +document.getElementById('lunch').value;
+  const dinner = +document.getElementById('dinner').value;
+  const brunch = +document.getElementById('brunch').value;
+
+  let mealsSummary = [];
+  if (breakfast) mealsSummary.push(`${breakfast} breakfast`);
+  if (lunch) mealsSummary.push(`${lunch} lunch`);
+  if (dinner) mealsSummary.push(`${dinner} dinner`);
+  if (brunch) mealsSummary.push(`${brunch} brunch`);
+
+  // Extras
+  let extras = [];
+  if (bbq) extras.push("BBQ setup");
+  if (waiter) extras.push("waitstaff");
+  if (bartender) extras.push("bartender service");
+  if (luxury) extras.push("premium ingredients");
+
+  let text = `Private Chef Service – Quick Estimate\n\n`;
+
+  text += `• Guests: ${guests}\n`;
+  text += `• Duration: ${days} day${days > 1 ? 's' : ''}\n`;
+  text += `• Meals: ${mealsSummary.join(', ') || 'Not specified'}\n`;
+  text += `• Cuisine: ${cuisine === 'thai' ? 'Thai' : 'Western / International'}\n`;
+
+  if (extras.length) {
+    text += `• Includes: ${extras.join(', ')}\n`;
+  }
+
+  text += `\nEstimated Price Range: ${min} – ${max}\n`;
+  //text += `${min} – ${max}\n`;
+  text += `Suggested Quote: ${sggstdQuote}\n`;
+
+  if (agency) {
+    text += `\n*This estimate includes agency commission.*\n`;
+  }
+
+  text += `\nFinal pricing may vary depending on menu customization, location logistics, and ingredient selection.\n`;
+
+  document.getElementById('quote-output').value = text;
+}
+
+update();
+
+
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("sw.js")
+    .then(() => console.log("Service Worker registered"));
+}
+</script>
+
+</html>
