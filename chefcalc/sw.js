@@ -1,8 +1,8 @@
 const CACHE_NAME = "chef-calc-v4";
 
 const urlsToCache = [
-  "./",
-  "./private_chef_cost_calculator_v4.html"
+  "/chefcalc/",
+  "/chefcalc/private_chef_cost_calculator_v4.html"
 ];
 
 self.addEventListener("install", event => {
