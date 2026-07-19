@@ -12,11 +12,6 @@
   <priority>0.80</priority>
 </url>
 <url>
-  <loc>https://kinthai.in.th/article.html</loc>
-  <lastmod>2024-04-30T12:45:42+00:00</lastmod>
-  <priority>0.80</priority>
-</url>
-<url>
   <loc>https://kinthai.in.th/thai-chicken-satay-skewers-with-peanut-sauce.html</loc>
   <lastmod>2024-09-30T12:45:42+00:00</lastmod>
   <priority>0.80</priority>
@@ -101,9 +96,14 @@
   <lastmod>2026-05-02T00:22:30+00:00</lastmod>
   <priority>0.80</priority>
 </url>
-  <url>
+<url>
   <loc>https://kinthai.in.th/private-chef-chinese-travelers.html</loc>
   <lastmod>2026-05-02T00:23:45+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://kinthai.in.th/resource.html</loc>
+  <lastmod>2026-07-19T12:35:00+00:00</lastmod>
   <priority>0.80</priority>
 </url>
 </urlset>
