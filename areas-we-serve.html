@@ -355,7 +355,7 @@
 		  document.getElementById('res-max').textContent = fmt(totalMax);
 		
 		  let rows = '';
-		  rows += `Transport (${km*2} km round trip)${ferry?' + ferry':''}:<span>${fmt(transportMin)} – ${fmt(transportMax)}</span><br>`;
+		  rows += `Transport (${km*1} km round trip)${ferry?' + ferry':''}:<span>${fmt(transportMin)} – ${fmt(transportMax)}</span><br>`;
 		  if(hotelOn) rows += `Accommodation (${nights} night${nights>1?'s':''}):<span>${fmt(hotelMin)} – ${fmt(hotelMax)}</span><br>`;
 		  rows += `Chef & staff:<span>${fmt(staffMin)} – ${fmt(staffMax)}</span><br>`;
 		  rows += `Ingredients (${guests} guests, ${cuisine==='thai'?'Thai':'western'}):<span>${fmt(ingMin)} – ${fmt(ingMax)}</span>`;
